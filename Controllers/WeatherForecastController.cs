@@ -4,29 +4,31 @@ namespace secret_santa_lottery_api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class WeatherForecastController : ControllerBase
+public class ParticipantController : ControllerBase
 {
     private static readonly string[] Summaries = new[]
     {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-    private readonly ILogger<WeatherForecastController> _logger;
+    private readonly ILogger<ParticipantController> _logger;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
+    public ParticipantController(ILogger<ParticipantController> logger)
     {
         _logger = logger;
     }
 
     [HttpGet(Name = "GetWeatherForecast")]
-    public IEnumerable<WeatherForecast> Get()
+    public IEnumerable<Participant> Get()
     {
-        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        var participants = new List<Participant>()
         {
-            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-        })
-        .ToArray();
+            new() { Id = 0, Name = "Erik" },
+            new() { Id = 1, Name = "Erika" },
+            new() { Id = 2, Name = "Jimmy" },
+            new() { Id = 3, Name = "Alex" }
+        };
+
+        return participants;
     }
 }
