@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos;
 
 namespace secret_santa_lottery_api.Controllers;
 
@@ -15,7 +16,13 @@ public class ParticipantController : ControllerBase
 
     [HttpGet(Name = "GetParticipant")]
     public Response Get()
-    {
+    {        
+        var client = new CosmosClient("");
+
+        var container = client.GetContainer("", "");
+
+        var result = container.GetItemQueryIterator<List<Participant>>("SELECT * FROM c");
+
         var participants = new Response()
         {
             Participants = new List<Participant>()
