@@ -1,3 +1,4 @@
+using System.Net.WebSockets;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 
@@ -15,25 +16,36 @@ public class ParticipantController : ControllerBase
     }
 
     [HttpGet(Name = "GetParticipant")]
-    public Response Get()
+    public async Task<Response> Get()
     {        
-        var client = new CosmosClient("");
+        var connectionString = Environment.GetEnvironmentVariable("participantCosmosConnectionString");
+        var databaseId = Environment.GetEnvironmentVariable("participantCosmosDbId");
+        var containerId = Environment.GetEnvironmentVariable("participantCosmosContainerId");
 
-        var container = client.GetContainer("", "");
+        var client = new CosmosClient(connectionString);
 
-        var result = container.GetItemQueryIterator<List<Participant>>("SELECT * FROM c");
+        var container = client.GetContainer(databaseId, containerId);
 
-        var participants = new Response()
+        var participants = new List<Participant>();
+
+        using FeedIterator<Participant> feed = container.GetItemQueryIterator<Participant>("SELECT * FROM c");
+
+        while (feed.HasMoreResults)
         {
-            Participants = new List<Participant>()
-            {
-                new() { Id = 0, Name = "Erik" },
-                new() { Id = 1, Name = "Erika" },
-                new() { Id = 2, Name = "Jimmy" },
-                new() { Id = 3, Name = "Alex" }
-            }
-        };
+            FeedResponse<Participant> results = await feed.ReadNextAsync();
 
-        return participants;
+            foreach (var result in results)
+            {
+                participants.Add(new Participant()
+                {
+                    Id = result.Id,
+                    Name = result.Name
+                });
+            }
+        }
+
+        var retval = new Response() { Participants = participants };
+
+        return retval;
     }
 }
