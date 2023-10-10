@@ -1,4 +1,3 @@
-using System.Net;
 using Microsoft.Azure.Cosmos;
 
 namespace secret_santa_lottery_api.Persistence;
@@ -6,21 +5,29 @@ namespace secret_santa_lottery_api.Persistence;
 public interface IParticipantRepository
 {
     Task<List<Participant>> GetAllParticipantsAsync();
-    Task<HttpStatusCode> RemoveParticipantAsync(Participant participant);
+    Task<ItemResponse<Participant>> RemoveParticipantAsync(Participant participant);
+    Task<ItemResponse<Participant>> CreateParticipantAsync(Participant participant);
 }
 
 public class ParticipantRepository : IParticipantRepository
 {
-    public async Task<List<Participant>> GetAllParticipantsAsync()
+    private readonly string _connectionString;
+    private readonly string _databaseId;
+    private readonly string _containerId;
+
+    public ParticipantRepository()
     {
         //TODO: Move secrets to azure keyvault
-        var connectionString = Environment.GetEnvironmentVariable("participantCosmosConnectionString");
-        var databaseId = Environment.GetEnvironmentVariable("participantCosmosDbId");
-        var containerId = Environment.GetEnvironmentVariable("participantCosmosContainerId");
+        _connectionString = Environment.GetEnvironmentVariable("participantCosmosConnectionString");
+        _databaseId = Environment.GetEnvironmentVariable("participantCosmosDbId");
+        _containerId = Environment.GetEnvironmentVariable("participantCosmosContainerId");
+    }
 
-        var client = new CosmosClient(connectionString);
+    public async Task<List<Participant>> GetAllParticipantsAsync()
+    {
+        var client = new CosmosClient(_connectionString);
 
-        var container = client.GetContainer(databaseId, containerId);
+        var container = client.GetContainer(_databaseId, _containerId);
 
         var participants = new List<Participant>();
 
@@ -34,8 +41,8 @@ public class ParticipantRepository : IParticipantRepository
             {
                 participants.Add(new Participant()
                 {
-                    Id = result.Id,
-                    Name = result.Name
+                    id = result.id,
+                    name = result.name
                 });
             }
         }
@@ -43,19 +50,25 @@ public class ParticipantRepository : IParticipantRepository
         return participants;
     }
 
-    public async Task<HttpStatusCode> RemoveParticipantAsync(Participant participant)
+    public async Task<ItemResponse<Participant>> RemoveParticipantAsync(Participant participant)
     {
-        //TODO: Move secrets to azure keyvault
-        var connectionString = Environment.GetEnvironmentVariable("participantCosmosConnectionString");
-        var databaseId = Environment.GetEnvironmentVariable("participantCosmosDbId");
-        var containerId = Environment.GetEnvironmentVariable("participantCosmosContainerId");
+        var client = new CosmosClient(_connectionString);
 
-        var client = new CosmosClient(connectionString);
+        var container = client.GetContainer(_databaseId, _containerId);
 
-        var container = client.GetContainer(databaseId, containerId);
+        var response = await container.DeleteItemAsync<Participant>(participant.id.ToString(), new PartitionKey(participant.name));
 
-        var response = await container.DeleteItemAsync<Participant>(participant.Id.ToString(), new PartitionKey(participant.Name));
+        return response;
+    }
 
-        return response.StatusCode;
+    public async Task<ItemResponse<Participant>> CreateParticipantAsync(Participant participant)
+    {
+        var client = new CosmosClient(_connectionString);
+
+        var container = client.GetContainer(_databaseId, _containerId);
+
+        var response = await container.CreateItemAsync(participant);
+        
+        return response;
     }
 }

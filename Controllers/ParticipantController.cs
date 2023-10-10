@@ -1,5 +1,5 @@
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos;
 using secret_santa_lottery_api.Persistence;
 
 namespace secret_santa_lottery_api.Controllers;
@@ -28,14 +28,26 @@ public class ParticipantController : ControllerBase
     }
 
     [HttpDelete(Name = "DeleteParticipant")]
-    public async Task<HttpStatusCode> Delete(int id, string name)
+    public async Task<ItemResponse<Participant>> Delete(string id, string name)
     {        
         var participant = new Participant()
         {
-            Id = id,
-            Name = name
+            id = id,
+            name = name
         };
 
         return await _participantRepo.RemoveParticipantAsync(participant);
+    }
+
+    [HttpPost(Name = "CreateParticipant")]
+    public async Task<ItemResponse<Participant>> Post(string id, string name)
+    {        
+        var participant = new Participant()
+        {
+            id = id,
+            name = name
+        };
+
+        return await _participantRepo.CreateParticipantAsync(participant);
     }
 }
