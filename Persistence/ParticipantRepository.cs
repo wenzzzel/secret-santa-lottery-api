@@ -19,7 +19,6 @@ public class ParticipantRepository : IParticipantRepository
 
     public ParticipantRepository(IOptions<CosmosDbConfig> options)
     {
-        //TODO: Move secrets to azure keyvault
         _connectionString = options.Value.ConnectionString;
         _databaseId = options.Value.DatabaseId;
         _containerId = options.Value.ContainerId;
