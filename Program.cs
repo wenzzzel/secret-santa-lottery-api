@@ -1,5 +1,6 @@
 using secret_santa_lottery_api.Configuration;
 using secret_santa_lottery_api.Persistence;
+using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,10 @@ builder.Services.AddSingleton<IParticipantRepository, ParticipantRepository>();
 builder.Services.Configure<CosmosDbConfig>(
     builder.Configuration.GetSection(nameof(CosmosDbConfig))
 );
+
+builder.Configuration.AddAzureKeyVault(
+        new Uri($"https://secret-santa-kv.vault.azure.net"),
+        new DefaultAzureCredential());
 
 var app = builder.Build();
 
