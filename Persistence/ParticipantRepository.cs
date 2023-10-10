@@ -11,6 +11,7 @@ public class ParticipantRepository : IParticipantRepository
 {
     public async Task<List<Participant>> GetAllParticipantsAsync()
     {
+        //TODO: Move secrets to azure keyvault
         var connectionString = Environment.GetEnvironmentVariable("participantCosmosConnectionString");
         var databaseId = Environment.GetEnvironmentVariable("participantCosmosDbId");
         var containerId = Environment.GetEnvironmentVariable("participantCosmosContainerId");
