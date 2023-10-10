@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.Azure.Cosmos;
 
 namespace secret_santa_lottery_api.Persistence;
@@ -5,6 +6,7 @@ namespace secret_santa_lottery_api.Persistence;
 public interface IParticipantRepository
 {
     Task<List<Participant>> GetAllParticipantsAsync();
+    Task<HttpStatusCode> RemoveParticipantAsync(Participant participant);
 }
 
 public class ParticipantRepository : IParticipantRepository
@@ -39,5 +41,21 @@ public class ParticipantRepository : IParticipantRepository
         }
 
         return participants;
+    }
+
+    public async Task<HttpStatusCode> RemoveParticipantAsync(Participant participant)
+    {
+        //TODO: Move secrets to azure keyvault
+        var connectionString = Environment.GetEnvironmentVariable("participantCosmosConnectionString");
+        var databaseId = Environment.GetEnvironmentVariable("participantCosmosDbId");
+        var containerId = Environment.GetEnvironmentVariable("participantCosmosContainerId");
+
+        var client = new CosmosClient(connectionString);
+
+        var container = client.GetContainer(databaseId, containerId);
+
+        var response = await container.DeleteItemAsync<Participant>(participant.Id.ToString(), new PartitionKey(participant.Name));
+
+        return response.StatusCode;
     }
 }

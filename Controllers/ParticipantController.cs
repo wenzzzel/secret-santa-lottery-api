@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using secret_santa_lottery_api.Persistence;
 
@@ -24,5 +25,17 @@ public class ParticipantController : ControllerBase
         var retval = new Response() { Participants = participants };
 
         return retval;
+    }
+
+    [HttpDelete(Name = "DeleteParticipant")]
+    public async Task<HttpStatusCode> Delete(int id, string name)
+    {        
+        var participant = new Participant()
+        {
+            Id = id,
+            Name = name
+        };
+
+        return await _participantRepo.RemoveParticipantAsync(participant);
     }
 }
