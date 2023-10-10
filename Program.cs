@@ -1,3 +1,4 @@
+using secret_santa_lottery_api.Configuration;
 using secret_santa_lottery_api.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IParticipantRepository, ParticipantRepository>();
+
+builder.Services.Configure<CosmosDbConfig>(
+    builder.Configuration.GetSection(nameof(CosmosDbConfig))
+);
 
 var app = builder.Build();
 

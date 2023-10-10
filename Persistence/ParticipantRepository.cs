@@ -1,4 +1,6 @@
 using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Options;
+using secret_santa_lottery_api.Configuration;
 
 namespace secret_santa_lottery_api.Persistence;
 
@@ -15,12 +17,12 @@ public class ParticipantRepository : IParticipantRepository
     private readonly string _databaseId;
     private readonly string _containerId;
 
-    public ParticipantRepository()
+    public ParticipantRepository(IOptions<CosmosDbConfig> options)
     {
         //TODO: Move secrets to azure keyvault
-        _connectionString = Environment.GetEnvironmentVariable("participantCosmosConnectionString");
-        _databaseId = Environment.GetEnvironmentVariable("participantCosmosDbId");
-        _containerId = Environment.GetEnvironmentVariable("participantCosmosContainerId");
+        _connectionString = options.Value.ConnectionString;
+        _databaseId = options.Value.DatabaseId;
+        _containerId = options.Value.ContainerId;
     }
 
     public async Task<List<Participant>> GetAllParticipantsAsync()
