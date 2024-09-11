@@ -1,4 +1,3 @@
-
 namespace secret_santa_lottery_api.Configuration;
 
 public class CosmosDbConfig
