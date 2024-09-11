@@ -1,6 +1,7 @@
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
 using secret_santa_lottery_api.Configuration;
+using secret_santa_lottery_api.Models;
 
 namespace secret_santa_lottery_api.Persistence;
 

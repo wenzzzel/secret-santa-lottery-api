@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 using secret_santa_lottery_api.Persistence;
+using secret_santa_lottery_api.Models;
 
 namespace secret_santa_lottery_api.Controllers;
 

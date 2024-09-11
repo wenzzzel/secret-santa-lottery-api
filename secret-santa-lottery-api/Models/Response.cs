@@ -1,4 +1,4 @@
-namespace secret_santa_lottery_api;
+namespace secret_santa_lottery_api.Models;
 
 public class Response
 {
