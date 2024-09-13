@@ -1,6 +1,10 @@
+using Azure.Identity;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using secret_santa_lottery_api.Configuration;
 using secret_santa_lottery_api.Persistence;
-using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 

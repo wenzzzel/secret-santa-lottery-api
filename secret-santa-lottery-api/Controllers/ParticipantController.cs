@@ -12,34 +12,20 @@ public class ParticipantController(IParticipantRepository _participantRepo) : Co
     [HttpGet(Name = "GetParticipant")]
     public async Task<Response> Get()
     {        
-        var participants = await _participantRepo.GetAllParticipantsAsync();
+        var participants = await _participantRepo.GetAllParticipants();
 
-        var retval = new Response() { Participants = participants };
-
-        return retval;
+        return new Response(participants);
     }
 
     [HttpDelete(Name = "DeleteParticipant")]
-    public async Task<ItemResponse<Participant>> Delete(string id, string name)
-    {        
-        var participant = new Participant()
-        {
-            id = id,
-            name = name
-        };
-
-        return await _participantRepo.RemoveParticipantAsync(participant);
+    public async Task<ItemResponse<Participant>> Delete(string id, string name, string partner)
+    {
+        return await _participantRepo.DeleteParticipant(new(id, name, partner));
     }
 
     [HttpPost(Name = "CreateParticipant")]
-    public async Task<ItemResponse<Participant>> Post(string id, string name)
-    {        
-        var participant = new Participant()
-        {
-            id = id,
-            name = name
-        };
-
-        return await _participantRepo.CreateParticipantAsync(participant);
+    public async Task<ItemResponse<Participant>> Post(string id, string name, string partner)
+    {
+        return await _participantRepo.CreateParticipant(new(id, name, partner));
     }
 }
