@@ -33,7 +33,7 @@ public class ParticipantRepository : IParticipantRepository
             FeedResponse<Participant> results = await feed.ReadNextAsync();
 
             foreach (var result in results)
-                participants.Add(new(result.Id, result.Name, result.Partner));
+                participants.Add(new(result.Id, result.Name, result.Partner, result.SantaForId));
         }
 
         return participants;

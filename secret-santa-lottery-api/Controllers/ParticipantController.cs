@@ -18,14 +18,14 @@ public class ParticipantController(IParticipantRepository _participantRepo) : Co
     }
 
     [HttpDelete(Name = "DeleteParticipant")]
-    public async Task<ItemResponse<Participant>> Delete(string id, string name, string partner)
+    public async Task<ItemResponse<Participant>> Delete(string id, string name, string partner, string santaForId)
     {
-        return await _participantRepo.DeleteParticipant(new(id, name, partner));
+        return await _participantRepo.DeleteParticipant(new(id, name, partner, santaForId));
     }
 
     [HttpPost(Name = "CreateParticipant")]
-    public async Task<ItemResponse<Participant>> Post(string id, string name, string partner)
+    public async Task<ItemResponse<Participant>> Post(string id, string name, string partner, string santaForId)
     {
-        return await _participantRepo.CreateParticipant(new(id, name, partner));
+        return await _participantRepo.CreateParticipant(new(id, name, partner, santaForId));
     }
 }
