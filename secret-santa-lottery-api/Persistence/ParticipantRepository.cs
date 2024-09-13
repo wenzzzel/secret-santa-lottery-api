@@ -1,5 +1,4 @@
 using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.Options;
 using secret_santa_lottery_api.Configuration;
 using secret_santa_lottery_api.Models;
 
@@ -7,70 +6,46 @@ namespace secret_santa_lottery_api.Persistence;
 
 public interface IParticipantRepository
 {
-    Task<List<Participant>> GetAllParticipantsAsync();
-    Task<ItemResponse<Participant>> RemoveParticipantAsync(Participant participant);
-    Task<ItemResponse<Participant>> CreateParticipantAsync(Participant participant);
+    Task<List<Participant>> GetAllParticipants();
+    Task<ItemResponse<Participant>> DeleteParticipant(Participant participant);
+    Task<ItemResponse<Participant>> CreateParticipant(Participant participant);
 }
 
 public class ParticipantRepository : IParticipantRepository
 {
-    private readonly string _connectionString;
-    private readonly string _databaseId;
-    private readonly string _containerId;
+    private CosmosClient _client;
+    private Container _container;
 
     public ParticipantRepository(IOptions<CosmosDbConfig> options)
     {
-        _connectionString = options.Value.ConnectionString;
-        _databaseId = options.Value.DatabaseId;
-        _containerId = options.Value.ContainerId;
+        _client = new CosmosClient(options.Value.ConnectionString);
+        _container = _client.GetContainer(options.Value.DatabaseId, options.Value.ContainerId);
     }
 
-    public async Task<List<Participant>> GetAllParticipantsAsync()
+    public async Task<List<Participant>> GetAllParticipants()
     {
-        var client = new CosmosClient(_connectionString);
-
-        var container = client.GetContainer(_databaseId, _containerId);
-
         var participants = new List<Participant>();
 
-        using FeedIterator<Participant> feed = container.GetItemQueryIterator<Participant>("SELECT * FROM c");
+        using FeedIterator<Participant> feed = _container.GetItemQueryIterator<Participant>("SELECT * FROM c");
 
         while (feed.HasMoreResults)
         {
             FeedResponse<Participant> results = await feed.ReadNextAsync();
 
             foreach (var result in results)
-            {
-                participants.Add(new Participant()
-                {
-                    id = result.id,
-                    name = result.name
-                });
-            }
+                participants.Add(new(result.Id, result.Name, result.Partner));
         }
 
         return participants;
     }
 
-    public async Task<ItemResponse<Participant>> RemoveParticipantAsync(Participant participant)
+    public async Task<ItemResponse<Participant>> DeleteParticipant(Participant participant)
     {
-        var client = new CosmosClient(_connectionString);
-
-        var container = client.GetContainer(_databaseId, _containerId);
-
-        var response = await container.DeleteItemAsync<Participant>(participant.id.ToString(), new PartitionKey(participant.name));
-
-        return response;
+        return await _container.DeleteItemAsync<Participant>(participant.Id.ToString(), new PartitionKey(participant.Name));
     }
 
-    public async Task<ItemResponse<Participant>> CreateParticipantAsync(Participant participant)
+    public async Task<ItemResponse<Participant>> CreateParticipant(Participant participant)
     {
-        var client = new CosmosClient(_connectionString);
-
-        var container = client.GetContainer(_databaseId, _containerId);
-
-        var response = await container.CreateItemAsync(participant);
-        
-        return response;
+        return await _container.CreateItemAsync(participant);
     }
 }
