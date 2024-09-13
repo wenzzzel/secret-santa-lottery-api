@@ -28,4 +28,10 @@ public class ParticipantController(IParticipantRepository _participantRepo) : Co
     {
         return await _participantRepo.CreateParticipant(new(id, name, partner));
     }
+
+    [HttpPut(Name = "UpdateParticipant")]
+    public async Task<ItemResponse<Participant>> Put(string id, string name, string partner)
+    {
+        return await _participantRepo.UpdateParticipant(new(id, name, partner));
+    }
 }

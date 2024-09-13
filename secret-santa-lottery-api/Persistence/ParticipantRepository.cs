@@ -9,6 +9,8 @@ public interface IParticipantRepository
     Task<List<Participant>> GetAllParticipants();
     Task<ItemResponse<Participant>> DeleteParticipant(Participant participant);
     Task<ItemResponse<Participant>> CreateParticipant(Participant participant);
+    Task<ItemResponse<Participant>> UpdateParticipant(Participant participant);
+
 }
 
 public class ParticipantRepository : IParticipantRepository
@@ -47,5 +49,10 @@ public class ParticipantRepository : IParticipantRepository
     public async Task<ItemResponse<Participant>> CreateParticipant(Participant participant)
     {
         return await _container.CreateItemAsync(participant);
+    }
+
+    public async Task<ItemResponse<Participant>> UpdateParticipant(Participant participant)
+    {
+        return await _container.UpsertItemAsync(participant);
     }
 }
