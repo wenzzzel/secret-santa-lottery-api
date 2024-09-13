@@ -30,8 +30,8 @@ public class ParticipantController(IParticipantRepository _participantRepo) : Co
     }
 
     [HttpPut(Name = "UpdateParticipant")]
-    public async Task<ItemResponse<Participant>> Put(string id, string name, string partner)
+    public async Task<ItemResponse<Participant>> Put(string id, string name, string partner, string santaForId)
     {
-        return await _participantRepo.UpdateParticipant(new(id, name, partner));
+        return await _participantRepo.UpdateParticipant(new(id, name, partner, santaForId));
     }
 }
