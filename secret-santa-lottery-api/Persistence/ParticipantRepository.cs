@@ -35,7 +35,7 @@ public class ParticipantRepository : IParticipantRepository
             FeedResponse<Participant> results = await feed.ReadNextAsync();
 
             foreach (var result in results)
-                participants.Add(new(result.id, result.name, result.partner, result.santaForId));
+                participants.Add(new(result.id, result.name, result.partner, result.santaForId, result.alreadyTaken));
         }
 
         return participants;

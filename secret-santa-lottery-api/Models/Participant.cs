@@ -6,14 +6,16 @@ public class Participant
 
     public string name { get; set; }
 
-    public string partner { get; set; }
-    public string santaForId { get; set; }
+    public string? partner { get; set; }
+    public string? santaForId { get; set; }
+    public bool alreadyTaken { get; set; }
 
-    public Participant(string id, string name, string partner, string santaForId)
+    public Participant(string id, string name, string partner, string santaForId, bool alreadyTaken)
     {
         this.id = id;
         this.name = name;
         this.partner = partner;
         this.santaForId = santaForId;
+        this.alreadyTaken = alreadyTaken;
     }
 }
