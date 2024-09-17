@@ -1,17 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Cosmos;
 using secret_santa_lottery_api.Persistence;
 using secret_santa_lottery_api.Models;
-using Microsoft.AspNetCore.Http;
-using System.Net.Http;
 
 namespace secret_santa_lottery_api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ParticipantController(IParticipantRepository _participantRepo) : ControllerBase
+public class ParticipantsController(IParticipantRepository _participantRepo) : ControllerBase
 {
-    [HttpGet(Name = "GetParticipant")]
+    [HttpGet(Name = "GetParticipants")]
     public async Task<GetResponse> Get()
     {        
         var participants = await _participantRepo.GetAllParticipants();
