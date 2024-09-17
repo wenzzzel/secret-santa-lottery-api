@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.Azure.Cosmos;
 using secret_santa_lottery_api.Configuration;
 using secret_santa_lottery_api.Models;
@@ -7,10 +8,9 @@ namespace secret_santa_lottery_api.Persistence;
 public interface IParticipantRepository
 {
     Task<List<Participant>> GetAllParticipants();
-    Task<ItemResponse<Participant>> DeleteParticipant(Participant participant);
-    Task<ItemResponse<Participant>> CreateParticipant(Participant participant);
-    Task<ItemResponse<Participant>> UpdateParticipant(Participant participant);
-
+    Task<HttpStatusCode> DeleteParticipant(string Id, string PartitionKey);
+    Task<Participant> CreateParticipant(Participant participant);
+    Task<Participant> UpdateParticipant(Participant participant);
 }
 
 public class ParticipantRepository : IParticipantRepository
@@ -35,24 +35,30 @@ public class ParticipantRepository : IParticipantRepository
             FeedResponse<Participant> results = await feed.ReadNextAsync();
 
             foreach (var result in results)
-                participants.Add(new(result.Id, result.Name, result.Partner, result.SantaForId));
+                participants.Add(new(result.id, result.name, result.partner, result.santaForId));
         }
 
         return participants;
     }
 
-    public async Task<ItemResponse<Participant>> DeleteParticipant(Participant participant)
+    public async Task<HttpStatusCode> DeleteParticipant(string Id, string PartitionKey)
     {
-        return await _container.DeleteItemAsync<Participant>(participant.Id.ToString(), new PartitionKey(participant.Name));
+        var cosmosResponse = await _container.DeleteItemAsync<Participant>(Id, new PartitionKey(PartitionKey));
+
+        return cosmosResponse.StatusCode;
     }
 
-    public async Task<ItemResponse<Participant>> CreateParticipant(Participant participant)
+    public async Task<Participant> CreateParticipant(Participant participant)
     {
-        return await _container.CreateItemAsync(participant);
+        var cosmosResponse = await _container.CreateItemAsync(participant);
+
+        return cosmosResponse.Resource;
     }
 
-    public async Task<ItemResponse<Participant>> UpdateParticipant(Participant participant)
+    public async Task<Participant> UpdateParticipant(Participant participant)
     {
-        return await _container.UpsertItemAsync(participant);
+        var cosmosResponse = await _container.UpsertItemAsync(participant, new(participant.name));
+
+        return cosmosResponse.Resource;
     }
 }

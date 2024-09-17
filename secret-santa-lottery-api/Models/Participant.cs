@@ -2,18 +2,18 @@ namespace secret_santa_lottery_api.Models;
 
 public class Participant
 {
-    public string Id { get; set; }
+    public string id { get; set; }
 
-    public string Name { get; set; }
+    public string name { get; set; }
 
-    public string Partner { get; set; }
-    public string SantaForId { get; set; }
+    public string partner { get; set; }
+    public string santaForId { get; set; }
 
     public Participant(string id, string name, string partner, string santaForId)
     {
-        Id = id;
-        Name = name;
-        Partner = partner;
-        SantaForId = santaForId;
+        this.id = id;
+        this.name = name;
+        this.partner = partner;
+        this.santaForId = santaForId;
     }
 }

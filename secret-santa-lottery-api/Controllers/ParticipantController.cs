@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 using secret_santa_lottery_api.Persistence;
 using secret_santa_lottery_api.Models;
+using Microsoft.AspNetCore.Http;
+using System.Net.Http;
 
 namespace secret_santa_lottery_api.Controllers;
 
@@ -10,28 +12,28 @@ namespace secret_santa_lottery_api.Controllers;
 public class ParticipantController(IParticipantRepository _participantRepo) : ControllerBase
 {
     [HttpGet(Name = "GetParticipant")]
-    public async Task<Response> Get()
+    public async Task<GetResponse> Get()
     {        
         var participants = await _participantRepo.GetAllParticipants();
-
-        return new Response(participants);
+        return new GetResponse(participants);
     }
 
     [HttpDelete(Name = "DeleteParticipant")]
-    public async Task<ItemResponse<Participant>> Delete(string id, string name, string partner, string santaForId)
+    public async Task<DeleteResponse> Delete(string id, string name)
     {
-        return await _participantRepo.DeleteParticipant(new(id, name, partner, santaForId));
+        var deleteResult = await _participantRepo.DeleteParticipant(id, name);
+        return new DeleteResponse(deleteResult);
     }
 
     [HttpPost(Name = "CreateParticipant")]
-    public async Task<ItemResponse<Participant>> Post(string id, string name, string partner, string santaForId)
+    public async Task<Participant> Post([FromBody] Participant participant)
     {
-        return await _participantRepo.CreateParticipant(new(id, name, partner, santaForId));
+        return await _participantRepo.CreateParticipant(participant);
     }
 
     [HttpPut(Name = "UpdateParticipant")]
-    public async Task<ItemResponse<Participant>> Put(string id, string name, string partner, string santaForId)
+    public async Task<Participant> Put([FromBody] Participant participant)
     {
-        return await _participantRepo.UpdateParticipant(new(id, name, partner, santaForId));
+        return await _participantRepo.UpdateParticipant(participant);
     }
 }

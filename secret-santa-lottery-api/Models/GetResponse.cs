@@ -1,10 +1,10 @@
 namespace secret_santa_lottery_api.Models;
 
-public class Response
+public class GetResponse
 {
     public List<Participant> Participants { get; }
 
-    public Response(List<Participant> participants)
+    public GetResponse(List<Participant> participants)
     {
         Participants = participants;
     }
