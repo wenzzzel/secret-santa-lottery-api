@@ -12,6 +12,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigins", policy =>
+    {
+        policy.WithOrigins(
+            "https://secretsanta.erikwenzel.se",
+            "https://secretsanta.erikwenzel.com"
+        )
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials();
+    });
+});
+
 builder.Services.AddSingleton<IParticipantRepository, ParticipantRepository>();
 
 builder.Services.Configure<CosmosDbConfig>(
@@ -22,6 +36,8 @@ builder.Configuration.AddAzureKeyVault(
         new Uri($"https://secret-santa-kv.vault.azure.net"),
         new DefaultAzureCredential());
 
+
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -31,6 +47,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Use CORS policy
+app.UseCors("AllowSpecificOrigins");
 
 app.UseAuthorization();
 
